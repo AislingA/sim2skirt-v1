@@ -6,7 +6,7 @@ __pycache__/
 # C extensions
 *.so
 
-# my added ignores
+# Ignoring specific project items:
 src/SKIRT/
 
 # Distribution / packaging
