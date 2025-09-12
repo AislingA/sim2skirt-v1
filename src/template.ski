@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A SKIRT parameter file © Astronomical Observatory, Ghent University -->
+<skirt-simulation-hierarchy type="MonteCarloSimulation" format="9">
+<!-- -------------- -->
+<!-- SIMULATIONMODE -->
+<!-- -------------- -->
+    <MonteCarloSimulation userLevel="Expert" simulationMode="DustEmission" iteratePrimaryEmission="false" iterateSecondaryEmission="true" numPackets="1e7">
+        <random type="Random">
+            <Random seed="0"/>
+        </random>
+        <units type="Units">
+            <StellarUnits wavelengthOutputStyle="Wavelength" fluxOutputStyle="Frequency"/>
+        </units>
+<!-- ------ -->
+<!-- SOURCE -->
+<!-- ------ -->
+        <sourceSystem type="SourceSystem">
+            <SourceSystem minWavelength="0.09 micron" maxWavelength="1000 micron" sourceBias="0.5">
+                <sources type="Source">
+                    <ParticleSource filename="SOURCEFILE" importVelocity="false" importVelocityDispersion="false" importCurrentMass="false" useColumns="" sourceWeight="1" wavelengthBias="0.5">
+                        <smoothingKernel type="SmoothingKernel">
+                            <UniformSmoothingKernel/>
+                        </smoothingKernel>
+                        <sedFamily type="SEDFamily">
+                            <BlackBodySEDFamily/>
+                        </sedFamily>
+                        <wavelengthBiasDistribution type="WavelengthDistribution">
+                            <DefaultWavelengthDistribution/>
+                        </wavelengthBiasDistribution>
+                    </ParticleSource>
+                </sources>
+            </SourceSystem>
+        </sourceSystem>
+<!-- ------ -->
+<!-- MEDIUM -->
+<!-- ------ -->
+        <mediumSystem type="MediumSystem">
+            <MediumSystem>
+                <photonPacketOptions type="PhotonPacketOptions">
+                    <PhotonPacketOptions forceScattering="true" minWeightReduction="1e4" minScattEvents="0" pathLengthBias="0.5"/>
+                </photonPacketOptions>
+<!-- -------------- -->
+<!-- RADIATIONFIELD -->
+<!-- -------------- -->
+                <radiationFieldOptions type="RadiationFieldOptions">
+                    <RadiationFieldOptions storeRadiationField="true">
+                        <radiationFieldWLG type="DisjointWavelengthGrid">
+                            <LogWavelengthGrid minWavelength="0.09 micron" maxWavelength="1000 micron" numWavelengths="150"/>
+                        </radiationFieldWLG>
+                    </RadiationFieldOptions>
+                </radiationFieldOptions>
+<!-- ------------------- -->
+<!-- DUSTEMISSIONOPTIONS -->
+<!-- ------------------- -->
+                <dustEmissionOptions type="DustEmissionOptions">
+                    <DustEmissionOptions dustEmissionType="Stochastic" includeHeatingByCMB="false" maxFractionOfPrimary="0.01" maxFractionOfPrevious="0.01" sourceWeight="1" wavelengthBias="0.5">
+                        <cellLibrary type="SpatialCellLibrary">
+                            <AllCellsLibrary/>
+                        </cellLibrary>
+                        <dustEmissionWLG type="DisjointWavelengthGrid">
+                            <LogWavelengthGrid minWavelength="1 micron" maxWavelength="1000 micron" numWavelengths="300"/>
+                        </dustEmissionWLG>
+                        <wavelengthBiasDistribution type="WavelengthDistribution">
+                            <DefaultWavelengthDistribution/>
+                        </wavelengthBiasDistribution>
+                    </DustEmissionOptions>
+                </dustEmissionOptions>
+                <iterationOptions type="IterationOptions">
+                    <IterationOptions maxSecondaryIterations="25" secondaryIterationPacketsMultiplier="4"/>
+                </iterationOptions>
+<!-- -------------- -->
+<!-- PARTICLEMEDIUM -->
+<!-- -------------- -->
+<!-- AA 7/14 removed maxTemp=0 k -->
+                <media type="Medium">
+                    <ParticleMedium filename="GASFILE" massType="Mass" massFraction="1" importMetallicity="false" importTemperature="true" importVelocity="false" importMagneticField="false" importVariableMixParams="false" useColumns="">
+                        <smoothingKernel type="SmoothingKernel">
+                            <UniformSmoothingKernel/>
+                        </smoothingKernel>
+                        <materialMix type="MaterialMix">
+                            <ThemisDustMix numSilicateSizes="5" numHydrocarbonSizes="5"/>
+                        </materialMix>
+                    </ParticleMedium>
+                </media>
+                <samplingOptions type="SamplingOptions">
+                    <SamplingOptions numDensitySamples="100" numPropertySamples="1" aggregateVelocity="Average"/>
+                </samplingOptions>
+                <grid type="SpatialGrid">
+                    <PolicyTreeSpatialGrid minX="XMIN" maxX="XMAX" minY="YMIN" maxY="YMAX" minZ="ZMIN" maxZ="ZMAX" treeType="OctTree">
+                        <policy type="TreePolicy">
+                            <DensityTreePolicy minLevel="6" maxLevel="10" maxDustFraction="1e-6" maxDustOpticalDepth="0" maxDustDensityDispersion="0" maxElectronFraction="1e-6" maxGasFraction="1e-6"/>
+                        </policy>
+                    </PolicyTreeSpatialGrid>
+                </grid>
+            </MediumSystem>
+        </mediumSystem>
+<!-- ---------- -->
+<!-- INSTRUMENT -->
+<!-- ---------- -->
+        <instrumentSystem type="InstrumentSystem">
+            <InstrumentSystem>
+                <instruments type="Instrument">
+                    <FullInstrument instrumentName="spec" distance="1 kpc" inclination="90 deg" azimuth="0 deg" roll="0 deg" fieldOfViewX="FOVX" numPixelsX="800" centerX="0 pc" fieldOfViewY="FOVY" numPixelsY="800" centerY="0 pc" recordComponents="True" numScatteringLevels="0" recordPolarization="false" recordStatistics="false">
+                        <wavelengthGrid type="WavelengthGrid">
+                            <LogWavelengthGrid minWavelength="0.09 micron" maxWavelength="1000 micron" numWavelengths="150"/>
+                        </wavelengthGrid>
+                    </FullInstrument>
+                    <FullInstrument instrumentName="jwst" distance="1 kpc" inclination="90 deg" azimuth="0 deg" roll="0 deg" fieldOfViewX="FOVX" numPixelsX="800" centerX="0 pc" fieldOfViewY="FOVY" numPixelsY="800" centerY="0 pc" recordComponents="True" numScatteringLevels="0" recordPolarization="false" recordStatistics="false">
+                        <wavelengthGrid type="WavelengthGrid">
+                            <ConfigurableBandWavelengthGrid>
+                                <bands type="Band">
+                                    <BroadBand bandName="JWST_NIRCAM_F090W"/>
+                                    <BroadBand bandName="JWST_NIRCAM_F200W"/>
+                                    <BroadBand bandName="JWST_NIRCAM_F444W"/>
+                                    <BroadBand bandName="JWST_MIRI_F770W"/>
+                                    <BroadBand bandName="JWST_MIRI_F1500W"/>
+                                    <BroadBand bandName="JWST_MIRI_F2100W"/>
+                                </bands>
+                            </ConfigurableBandWavelengthGrid>
+                        </wavelengthGrid>
+                    </FullInstrument>
+                </instruments>
+            </InstrumentSystem>
+        </instrumentSystem>
+        <probeSystem type="ProbeSystem">
+            <ProbeSystem>
+                <probes type="Probe">
+                    <DensityProbe probeName="densprobe" probeAfter="Run">
+                        <form type="Form">
+                          <ParallelProjectionForm inclination="90 deg" azimuth="0 deg" roll="0 deg" fieldOfViewX="FOVX" numPixelsX="800" centerX="0 pc" fieldOfViewY="FOVY" numPixelsY="800" centerY="0 pc"/>
+                        </form>
+                    </DensityProbe>
+                    <ImportedMediumDensityProbe probeName="imdensprobe">
+                        <form type="GenericForm">
+                          <ParallelProjectionForm inclination="90 deg" azimuth="0 deg" roll="0 deg" fieldOfViewX="FOVX" numPixelsX="800" centerX="0 pc" fieldOfViewY="FOVY" numPixelsY="800" centerY="0 pc"/>
+                        </form>
+                    </ImportedMediumDensityProbe>
+                    <TemperatureProbe probeName="tempprobe" probeAfter="Run">
+                        <form type="Form">
+                          <ParallelProjectionForm inclination="90 deg" azimuth="0 deg" roll="0 deg" fieldOfViewX="FOVX" numPixelsX="800" centerX="0 pc" fieldOfViewY="FOVY" numPixelsY="800" centerY="0 pc"/>
+                        </form>
+                    </TemperatureProbe>
+                </probes>
+            </ProbeSystem>
+        </probeSystem>
+    </MonteCarloSimulation>
+</skirt-simulation-hierarchy>
